@@ -1,11 +1,16 @@
+from player import *
+
 class Board:
     # Player 0 is Left Score, Top Row
     # Player 1 is Right Score, Bottom Row
     # Tiles move counter-clockwise
-    def __init__(self):
-        self.top_pits = [1 for i in range(6)]
-        self.bot_pits = [4 for i in range(6)]
-        self.stores = [0 for i in range(2)]
+    def __init__(self, top_pits = [4 for i in range(6)], bot_pits = [4 for i in range(6)], stores = [0 for i in range(2)]):
+        self.top_pits = top_pits
+        self.bot_pits = bot_pits
+        self.stores = stores
+    
+    def get_flipped_board(self) -> 'Board':
+        return Board(list(reversed(self.bot_pits)), list(reversed(self.top_pits)), list(reversed(self.stores)))
     
     def __repr__(self) -> str:
         return "{ls} {tr} {rs}\n{ls} {br} {rs}".format(ls=str(self.stores[0]), rs=str(self.stores[1]), tr=str(self.top_pits), br=str(self.bot_pits))
@@ -58,12 +63,24 @@ class Board:
             self.stores[player_number] += 1 + self.get_pit([int(not(player_number)), 5 - current_pos[1]])
             self.update_pit([int(not(player_number)), 5 - current_pos[1]], 0, True)
         return False
+    
+    def play_game(self, player_zero, player_one):
+        curr_player_num = 0
+        while sum(self.stores) < 48:
+            rep = False
+            if curr_player_num == 0:
+                mv = player_zero.choose_move(self)
+                rep = self.move(curr_player_num, mv)
+            else:
+                mv = player_one.choose_move(self.get_flipped_board())
+                rep = self.move(curr_player_num, mv)
+            if not rep:
+                curr_player_num = int(not(curr_player_num))
+                
 
 
 if __name__ == "__main__":
     board = Board()
-    print(board)
-    print(board.move(0, 0))
-    print(board)
-    print(board.move(0, 1))
-    print(board)
+    player_zero = HumanPlayer()
+    player_one = HumanPlayer()
+    board.play_game(player_zero, player_one)
