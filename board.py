@@ -76,11 +76,17 @@ class Board:
                 rep = self.move(curr_player_num, mv)
             if not rep:
                 curr_player_num = int(not(curr_player_num))
+        if self.stores[0] == self.stores[1]:
+            print("The game ends in a tie!")
+            return -1
+        else:
+            print(f"With scores of {self.stores}, the winner is player {'zero' if self.stores[0] > self.stores[1] else 'one'}")
+            return 0 if self.stores[0] > self.stores[1] else 1
                 
 
 
 if __name__ == "__main__":
     board = Board()
-    player_zero = HumanPlayer()
-    player_one = HumanPlayer()
+    player_zero = RandomPlayer()
+    player_one = RandomPlayer()
     board.play_game(player_zero, player_one)
